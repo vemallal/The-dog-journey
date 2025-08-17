@@ -278,7 +278,6 @@ class Adventure:
             if self.currentMap == 'heaven.json':
                 self.render_surface.blit(self.resources['heaven-sunset'], (0, 0))
             if self.currentMap == 'hell.json':
-                # TODO: background
                 self.render_surface.blit(self.resources['hell'], (0, 0))
             if self.currentMap == 'map.json':
                 self.render_surface.blit(self.resources['background'], (0, 0))
@@ -286,7 +285,6 @@ class Adventure:
                 self.render_surface.blit(self.resources['forest-background'], (0, 0))
 
             if self.avatar.avatar_velocity[1] > 2.5:
-                print(self.avatar.position[0], self.avatar.position[1])
                 # Check if the sound is not already playing
                 if not self.channel3.get_busy():
                     self.channel3.play(pygame.mixer.Sound('artifacts/artifacts_falling.mp3'))
@@ -294,7 +292,7 @@ class Adventure:
             if self.avatar.position[1] >= 250:
                 Adventure(self.currentMap).run()
             self.scroll_offset[0] += (self.avatar.rect().centerx - self.render_surface.get_width() / 2 -
-                                      self.scroll_offset[0]) / 30
+                    self.scroll_offset[0]) / 30
             self.scroll_offset[1] += (self.avatar.rect().centery - self.render_surface.get_height() / 2 -
                                       self.scroll_offset[1]) / 30
             render_scroll = (int(self.scroll_offset[0]), int(self.scroll_offset[1]))
