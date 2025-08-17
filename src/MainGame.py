@@ -122,7 +122,7 @@ class Adventure:
         if self.currentMap == 'heaven.json':
             self.channel1.play(pygame.mixer.Sound('artifacts/heaven.mp3'), loops=1 ) # loops 2 times
         if self.currentMap == 'hell.json':
-            self.channel1.play(pygame.mixer.Sound('artifacts/backgroundmusic.mp3'), loops=1)
+            self.channel1.play(pygame.mixer.Sound('artifacts/heaven.mp3'), loops=1 )
         if self.currentMap == 'map.json':
             self.channel1.play(pygame.mixer.Sound('artifacts/backgroundmusic.mp3'), loops=1)
         if self.currentMap == 'map2.json':
