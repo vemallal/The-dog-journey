@@ -10,93 +10,16 @@ the game it will display a congratulation sign.
 from everythingbutmain.Sprites import Avatar, AnimationSequence
 from everythingbutmain.FunkyFeatures import Artifacts, NPCs, NPCMessage
 from everythingbutmain.AdvancedMovement import Ghosts, ObstacleFloat
-#from TitleScreen import Title
+from TitleScreen import Title
+from loadingpics import load_picture, load_pictures
 import sys
 import json
 import pygame
-import os
-
-BASE_IMAGE_DIR = 'artifacts/images/'
-
-
-def load_picture(file):
-    """Loads in only one picture."""
-    picture = pygame.image.load(BASE_IMAGE_DIR + file).convert()
-    picture.set_colorkey((0, 0, 0))
-    return picture
-
-
-def load_pictures(file):
-    """Loads in a sprite."""
-    pictures = []
-    png_filesNjpg_Files = [f for f in os.listdir(BASE_IMAGE_DIR + file) if f.endswith('.png') or f.endswith('.jpg')]
-    for img_name in sorted(png_filesNjpg_Files):
-        pictures.append(load_picture(file + '/' + img_name))
-    return pictures
 
 
 ADJACENT_OFFSETS = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (0, 0), (-1, 1), (0, 1), (1, 1)]
 PHYSICS_TILES = {'grass', 'stone', 'cloud', 'magma'}
 
-
-class Title:
-    def __init__(self):
-        """The starting screen."""
-        pygame.init()
-        pygame.display.set_caption('Main Menu')
-        self.screen = pygame.display.set_mode((640, 480))
-
-    def write(self, msg, size, color, coordinates):
-        # set message, and size
-        font = pygame.font.SysFont('Times New Roman', size, bold=True)
-        # render font and color
-        msgobj = font.render(msg, True, color)
-        # display message
-        self.screen.blit(msgobj, coordinates)
-
-    def title_screen(self):
-        """title screen game loop"""
-        while True:
-            # display background, start and exit buttons
-            self.screen.blit(load_picture("titleBackground.png"), (0, 0))
-            start_button = self.screen.blit(load_picture("start.png"), (220, 305))
-            exit_button = self.screen.blit(load_picture("exit.png"), (220, 370))
-
-            # write title, start, and exit buttons
-            self.write('A Dog\'s Journey', 50, 'white', (140, 100))
-            self.write('Home', 50, 'white', (260, 155))
-            self.write('Start', 35, 'white', (285, 310))
-            self.write('Exit', 35, 'white', (290, 375))
-
-            # get mouse position
-            a, b = pygame.mouse.get_pos()
-
-            button_pressed = False
-            # event handler for button clicks
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        pygame.quit()
-                        sys.exit()
-
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        button_pressed = True
-
-            # check for collisions with buttons
-            if start_button.collidepoint(a, b):
-                if button_pressed:
-                    Adventure().run()
-
-            if exit_button.collidepoint(a, b):
-                if button_pressed:
-                    pygame.quit()
-                    sys.exit()
-
-            pygame.display.update()
 
 
 class Adventure:
@@ -120,13 +43,13 @@ class Adventure:
         #self.channel4.set_volume(0.1)
         self.currentMap = currentMap
         if self.currentMap == 'heaven.json':
-            self.channel1.play(pygame.mixer.Sound('artifacts/heaven.mp3'), loops=1 ) # loops 2 times
+            self.channel1.play(pygame.mixer.Sound('artifacts/heaven.mp3'), loops=1) # loops 2 times
         if self.currentMap == 'hell.json':
-            self.channel1.play(pygame.mixer.Sound('artifacts/heaven.mp3'), loops=1 )
+            self.channel1.play(pygame.mixer.Sound('artifacts/hell.mp3'), loops=1)
         if self.currentMap == 'map.json':
             self.channel1.play(pygame.mixer.Sound('artifacts/backgroundmusic.mp3'), loops=1)
         if self.currentMap == 'map2.json':
-            self.channel1.play(pygame.mixer.Sound('artifacts/backgroundmusic.mp3'), loops=1)
+            self.channel1.play(pygame.mixer.Sound('artifacts/earth.mp3'), loops=1)
         
 # for the game
         self.tile_dimension = 16
@@ -213,6 +136,7 @@ class Adventure:
 
     def display_congratulations(self, screen):
         """Render the congratulations banner."""
+        # self.channel1.pause() # works but to what end
         banner_rect = pygame.Rect(0, 0, screen.get_width(), screen.get_height())  # hight was 100
         banner_rect.center = (screen.get_width() // 2, screen.get_height() // 2)
 
@@ -274,10 +198,12 @@ class Adventure:
         """Runs the entire game. Renders all the resources on the visible screen."""
         play_game = True
         while play_game is True:
+# made changes for the music played in the git version
             # background must be 320X240 
             if self.currentMap == 'heaven.json':
                 self.render_surface.blit(self.resources['heaven-sunset'], (0, 0))
             if self.currentMap == 'hell.json':
+                # TODO: background
                 self.render_surface.blit(self.resources['hell'], (0, 0))
             if self.currentMap == 'map.json':
                 self.render_surface.blit(self.resources['background'], (0, 0))
@@ -285,6 +211,7 @@ class Adventure:
                 self.render_surface.blit(self.resources['forest-background'], (0, 0))
 
             if self.avatar.avatar_velocity[1] > 2.5:
+                print(self.avatar.position[0], self.avatar.position[1])
                 # Check if the sound is not already playing
                 if not self.channel3.get_busy():
                     self.channel3.play(pygame.mixer.Sound('artifacts/artifacts_falling.mp3'))
@@ -292,7 +219,7 @@ class Adventure:
             if self.avatar.position[1] >= 250:
                 Adventure(self.currentMap).run()
             self.scroll_offset[0] += (self.avatar.rect().centerx - self.render_surface.get_width() / 2 -
-                    self.scroll_offset[0]) / 30
+                                      self.scroll_offset[0]) / 30
             self.scroll_offset[1] += (self.avatar.rect().centery - self.render_surface.get_height() / 2 -
                                       self.scroll_offset[1]) / 30
             render_scroll = (int(self.scroll_offset[0]), int(self.scroll_offset[1]))
@@ -331,7 +258,7 @@ class Adventure:
                 self.message.drawMessage(self.render_surface, distanceFromCamera=render_scroll)
                 if self.artifacts.canDogMoveOn and not self.currentMap == 'map.json':
                     Adventure('map.json').run()
-# making currently 
+
             if self.tomato.check_collision_with_NPC(self.avatar.rect(), self.render_surface,
                                                     distanceFromCamera=render_scroll) and self.currentMap == 'map.json':
                 self.message.drawMessage(self.render_surface, distanceFromCamera=render_scroll)
@@ -385,3 +312,4 @@ class Adventure:
 
 
 Title().title_screen()
+
