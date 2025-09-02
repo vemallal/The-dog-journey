@@ -30,7 +30,6 @@ class Adventure:
 # Music
         self.channel1 = pygame.mixer.Channel(0)
         self.channel1.set_volume(0.4)  # Set volume to 40% of maximum (0.2 is 20%)
-        # self.channel1.play(pygame.mixer.Sound('artifacts/backgroundmusic.mp3'))
         
         # for the sounds jumping and falling
         self.channel2 = pygame.mixer.Channel(1)
@@ -39,8 +38,6 @@ class Adventure:
         self.channel3 = pygame.mixer.Channel(2)
         self.channel3.set_volume(0.1)
 
-        # self.channel4 = pygame.mixer.Channel(4)
-        #self.channel4.set_volume(0.1)
         self.currentMap = currentMap
         if self.currentMap == 'heaven.json':
             self.channel1.play(pygame.mixer.Sound('artifacts/heaven.mp3'), loops=1) # loops 2 times
@@ -136,7 +133,6 @@ class Adventure:
 
     def display_congratulations(self, screen):
         """Render the congratulations banner."""
-        # self.channel1.pause() # works but to what end
         banner_rect = pygame.Rect(0, 0, screen.get_width(), screen.get_height())  # hight was 100
         banner_rect.center = (screen.get_width() // 2, screen.get_height() // 2)
 
@@ -198,12 +194,10 @@ class Adventure:
         """Runs the entire game. Renders all the resources on the visible screen."""
         play_game = True
         while play_game is True:
-# made changes for the music played in the git version
             # background must be 320X240 
             if self.currentMap == 'heaven.json':
                 self.render_surface.blit(self.resources['heaven-sunset'], (0, 0))
             if self.currentMap == 'hell.json':
-                # TODO: background
                 self.render_surface.blit(self.resources['hell'], (0, 0))
             if self.currentMap == 'map.json':
                 self.render_surface.blit(self.resources['background'], (0, 0))
@@ -211,7 +205,6 @@ class Adventure:
                 self.render_surface.blit(self.resources['forest-background'], (0, 0))
 
             if self.avatar.avatar_velocity[1] > 2.5:
-                print(self.avatar.position[0], self.avatar.position[1])
                 # Check if the sound is not already playing
                 if not self.channel3.get_busy():
                     self.channel3.play(pygame.mixer.Sound('artifacts/artifacts_falling.mp3'))
@@ -236,7 +229,7 @@ class Adventure:
             if self.currentMap == 'map2.json':
                 self.chipmunk.update_NPC()
                 self.chipmunk.render(self.render_surface, offset=render_scroll)
-# make wisp a NPC for heaven
+
             self.render(self.render_surface, offset=render_scroll)
             self.avatar.update_avatar(self.tile_layout, (self.movement_status[1] - self.movement_status[0], 0))
             self.avatar.render(self.render_surface, offset=render_scroll)
@@ -247,7 +240,7 @@ class Adventure:
                                                     distanceFromCamera=render_scroll) and self.currentMap == 'heaven.json':
                 self.message.drawMessage(self.render_surface, distanceFromCamera=render_scroll)
                 
-                if self.artifacts.canDogMoveOn and not self.currentMap == 'map.json': # change this the hell
+                if self.artifacts.canDogMoveOn and not self.currentMap == 'map.json': 
                     Adventure('map.json').run()
            
             if self.currentMap == 'heaven.json' and self.avatar.position[1] >= 249:
